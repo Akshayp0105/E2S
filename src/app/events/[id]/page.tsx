@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { use, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Calendar, Users, MapPin, Building2, CheckCircle2, ShieldCheck, Mail, Globe, Sparkles, FileText, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function EventDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
   const resolvedParams = use(params);
   const [isVouched, setIsVouched] = useState(false);
   const [event, setEvent] = useState<any>(null);
@@ -45,7 +47,7 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
         <h2 className="text-2xl font-bold">Event Not Found</h2>
-        <Link href="/events"><Button>Back to Events</Button></Link>
+        <Button onClick={() => router.back()}>Back to Previous Page</Button>
       </div>
     );
   }
@@ -58,12 +60,10 @@ export default function EventDetailsPage({ params }: { params: Promise<{ id: str
         <span className="text-muted-foreground font-medium z-0 text-2xl tracking-widest uppercase">Event Banner / Poster</span>
         
         <div className="absolute top-6 left-6 z-20">
-          <Link href="/events">
-            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur-md border-white/10 hover:bg-background/80">
+            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur-md border-white/10 hover:bg-background/80" onClick={() => router.back()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Events
+              Back
             </Button>
-          </Link>
         </div>
       </div>
 

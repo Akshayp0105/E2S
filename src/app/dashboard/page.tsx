@@ -59,6 +59,14 @@ export default function DashboardOverview() {
   const [events, setEvents] = useState<any[]>([]);
   const [sponsors, setSponsors] = useState<any[]>([]);
   const [userName, setUserName] = useState("there");
+  const [stats, setStats] = useState({
+    totalRaised: 0,
+    profileViews: 0,
+    investment: 0,
+    impressions: 0,
+    pendingOffers: 0,
+    sponsorshipRequests: 0,
+  });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -73,6 +81,16 @@ export default function DashboardOverview() {
           if (data.email) {
             setUserName(data.email.split('@')[0]);
           }
+          
+          // Set stats from user data or default to 0
+          setStats({
+            totalRaised: data.totalRaised || 0,
+            profileViews: data.profileViews || 0,
+            investment: data.investment || 0,
+            impressions: data.impressions || 0,
+            pendingOffers: data.pendingOffers || 0,
+            sponsorshipRequests: data.sponsorshipRequests || 0,
+          });
         }
 
         // Fetch real events
@@ -82,9 +100,12 @@ export default function DashboardOverview() {
         setEvents(fetchedEvents);
 
         // Fetch real sponsors
-        const qSponsors = query(collection(db, "sponsors"), limit(4));
+        // In a real app, query based on user's involvement
+        const qSponsors = query(collection(db, "users"), limit(4));
         const sponsorSnapshot = await getDocs(qSponsors);
-        const fetchedSponsors = sponsorSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const fetchedSponsors = sponsorSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() as any }))
+          .filter(s => s.role === 'giver');
         setSponsors(fetchedSponsors);
 
       } catch (error) {
@@ -141,16 +162,16 @@ export default function DashboardOverview() {
         {isOrganizer ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard title="Active Events" value={events.length.toString()} icon={Calendar} trend={`+${events.length} this month`} delay={0.1} />
-            <StatCard title="Sponsorship Requests" value="12" icon={HandshakeIcon} trend="+4 this week" delay={0.2} />
-            <StatCard title="Total Raised" value="$45,000" icon={TrendingUp} trend="+12% from last year" delay={0.3} />
-            <StatCard title="Profile Views" value="842" icon={Users} trend="+24% this week" delay={0.4} />
+            <StatCard title="Sponsorship Requests" value={stats.sponsorshipRequests.toString()} icon={HandshakeIcon} trend="+4 this week" delay={0.2} />
+            <StatCard title="Total Raised" value={`$${stats.totalRaised.toLocaleString()}`} icon={TrendingUp} trend="+12% from last year" delay={0.3} />
+            <StatCard title="Profile Views" value={stats.profileViews.toString()} icon={Users} trend="+24% this week" delay={0.4} />
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard title="Active Sponsorships" value={sponsors.length.toString()} icon={HandshakeIcon} trend="+2 this month" delay={0.1} />
-            <StatCard title="Pending Offers" value="3" icon={Calendar} trend="Awaiting response" delay={0.2} />
-            <StatCard title="Investment" value="$125,000" icon={TrendingUp} trend="+5% from last year" delay={0.3} />
-            <StatCard title="Total Impressions" value="4.2M" icon={Users} trend="+18% this event season" delay={0.4} />
+            <StatCard title="Pending Offers" value={stats.pendingOffers.toString()} icon={Calendar} trend="Awaiting response" delay={0.2} />
+            <StatCard title="Investment" value={`$${stats.investment.toLocaleString()}`} icon={TrendingUp} trend="+5% from last year" delay={0.3} />
+            <StatCard title="Total Impressions" value={stats.impressions.toLocaleString()} icon={Users} trend="+18% this event season" delay={0.4} />
           </div>
         )}
       </motion.div>

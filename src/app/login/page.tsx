@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
-import { auth, googleProvider } from "@/lib/firebase";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,24 +19,37 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const checkSetupComplete = async (userId: string) => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (userDoc.exists() && userDoc.data().setupComplete) {
+        router.push("/dashboard");
+      } else {
+        router.push("/profile/setup");
+      }
+    } catch (err) {
+      console.error("Error checking setup status", err);
+      router.push("/profile/setup");
+    }
+  };
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/profile/setup");
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await checkSetupComplete(userCredential.user.uid);
     } catch (err: any) {
       setError(err.message || "Failed to log in");
-    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      router.push("/profile/setup");
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      await checkSetupComplete(userCredential.user.uid);
     } catch (err: any) {
       setError(err.message || "Failed to log in with Google");
     }

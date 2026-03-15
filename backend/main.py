@@ -125,6 +125,61 @@ def create_event(event: EventModel):
     # db.collection(u'events').add(event.dict())
     return {"status": "success", "message": "Event created successfully", "data": event.dict()}
 
+@app.get("/api/sponsors/live")
+def get_live_sponsors():
+    """
+    Simulates fetching real-world sponsor profiles for display.
+    These are renowned tech companies usually looking to sponsor tech events.
+    """
+    real_sponsors = [
+        {
+            "id": "sponsor-101",
+            "name": "Google Cloud",
+            "role": "giver",
+            "industry": "Cloud Computing",
+            "hq": "Mountain View, CA",
+            "offerrings": "Up to $10k in Cloud Credits, Mentorship sessions, API access.",
+            "matchScore": 98
+        },
+        {
+            "id": "sponsor-102",
+            "name": "Stripe",
+            "role": "giver",
+            "industry": "FinTech",
+            "hq": "San Francisco, CA",
+            "offerrings": "Payment API integration support, swag, and $2k cash prize for best FinTech hack.",
+            "matchScore": 95
+        },
+        {
+            "id": "sponsor-103",
+            "name": "Vercel",
+            "role": "giver",
+            "industry": "Developer Tools",
+            "hq": "San Francisco, CA",
+            "offerrings": "Pro Accounts, Engineering mentorship, and platform credits.",
+            "matchScore": 92
+        },
+        {
+            "id": "sponsor-104",
+            "name": "AWS Startups",
+            "role": "giver",
+            "industry": "Cloud Computing",
+            "hq": "Seattle, WA",
+            "offerrings": "Activate Credits ($5k - $10k), go-to-market support.",
+            "matchScore": 89
+        },
+        {
+            "id": "sponsor-105",
+            "name": "Supabase",
+            "role": "giver",
+            "industry": "Database / Open Source",
+            "hq": "Remote",
+            "offerrings": "Swag boxes, Pro plan credits, and developer advocate technical talk.",
+            "matchScore": 85
+        }
+    ]
+    return {"status": "success", "data": real_sponsors}
+
 @app.get("/api/sponsors")
 def get_sponsors():
     # Fetch from Firestore 'users' collection where role == 'giver'

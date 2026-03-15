@@ -8,6 +8,7 @@ import Counter from "@/components/ui/Counter";
 import Antigravity from "@/components/ui/Antigravity";
 import { collection, getDocs, limit, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { motion } from "framer-motion";
 
 export default function LandingPage() {
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
@@ -176,78 +177,102 @@ export default function LandingPage() {
       {/* Featured Events Section */}
       <section className="w-full py-24 px-4 bg-background">
         <div className="container mx-auto max-w-6xl space-y-12">
-          <div className="text-center space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center space-y-4"
+          >
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Featured Opportunities</h2>
             <p className="text-muted text-lg max-w-2xl mx-auto">Discover high-potential events looking for partners.</p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {loading ? (
               <div className="col-span-full flex justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-accent" />
               </div>
-            ) : featuredEvents.map((event) => (
-              <div key={event.id} className="group relative rounded-2xl border border-border bg-background shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
+            ) : featuredEvents.map((event, i) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                key={event.id} 
+                className="group relative rounded-2xl border border-border bg-background shadow-sm hover:shadow-xl hover:-translate-y-2 hover:border-accent/40 transition-all duration-300 overflow-hidden flex flex-col"
+              >
                 <div className="aspect-[16/9] w-full bg-secondary relative overflow-hidden flex items-center justify-center">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent z-10" />
                   <span className="text-muted-foreground/30 text-sm font-medium z-0">Poster Image</span>
+                  <div className="absolute top-0 right-0 p-4 z-20 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                     <div className="bg-background/80 backdrop-blur-md rounded-full shadow-lg p-2">
+                       <ArrowRight className="w-5 h-5 text-accent -rotate-45" />
+                     </div>
+                  </div>
                   <div className="absolute bottom-4 left-4 z-20 flex gap-2">
                     {event.tags?.slice(0, 1).map((tag: string) => (
-                      <span key={tag} className="px-2 py-1 rounded text-xs font-semibold bg-white text-black">{tag}</span>
+                      <span key={tag} className="px-2.5 py-1 rounded-md text-xs font-bold bg-white text-black shadow-sm">{tag}</span>
                     ))}
-                    <span className="px-2 py-1 rounded text-xs font-semibold bg-accent text-white">Looking for Sponsors</span>
+                    <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-accent text-white shadow-sm">Looking for Sponsors</span>
                   </div>
                 </div>
                 
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="font-semibold text-xl mb-2 group-hover:text-accent transition-colors">
+                <div className="p-6 flex-1 flex flex-col relative z-20 -mt-2 bg-background rounded-t-xl">
+                  <h3 className="font-bold text-xl mb-2 group-hover:text-accent transition-colors line-clamp-1">
                     <Link href={`/events/${event.id}`}>
                       <span className="absolute inset-0 z-10" aria-hidden="true" />
                       {event.title}
                     </Link>
                   </h3>
-                  <p className="text-muted text-sm mb-4 line-clamp-2">{event.description}</p>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{event.description}</p>
                   
-                  <div className="mt-auto space-y-3 pt-4 border-t border-border">
-                    <div className="flex items-center text-sm text-muted">
-                      <Calendar className="h-4 w-4 mr-2" />
+                  <div className="mt-auto space-y-3 pt-4 border-t border-border/50">
+                    <div className="flex items-center text-sm font-medium text-foreground/80">
+                      <Calendar className="h-4 w-4 mr-2 text-accent" />
                       {event.date}
                     </div>
-                    <div className="flex items-center text-sm text-muted">
-                      <Users className="h-4 w-4 mr-2" />
+                    <div className="flex items-center text-sm font-medium text-foreground/80">
+                      <Users className="h-4 w-4 mr-2 text-accent" />
                       {event.participants}+ Participants
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
           
           <div className="flex justify-center mt-8">
             <Link href="/events">
-              <Button variant="outline" size="lg">View All Internal Events</Button>
+               <Button variant="outline" size="lg" className="rounded-full px-8 hover:bg-accent hover:text-white transition-all duration-300">
+                 View All Internal Events
+               </Button>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Live External Events Section */}
-      <section className="w-full py-24 px-4 bg-secondary/30 border-t border-border relative overflow-hidden">
+      <section className="w-full py-24 px-4 bg-secondary/20 border-t border-border relative overflow-hidden">
         {/* Glow behind the section */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
         <div className="container mx-auto max-w-6xl space-y-12 relative z-10">
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-sm text-red-500 backdrop-blur-md shadow-[0_0_15px_rgba(239,68,68,0.2)] mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center rounded-full border border-red-500/30 bg-red-500/5 px-4 py-1.5 text-sm font-semibold text-red-500 backdrop-blur-md shadow-[0_0_25px_rgba(239,68,68,0.15)] mx-auto">
               <span className="flex h-2 w-2 shadow-[0_0_10px_rgba(239,68,68,1)] rounded-full bg-red-500 mr-2 animate-pulse"></span>
               Live External Network
             </div>
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mt-4">
               <span className="bg-gradient-to-r from-red-500 via-orange-400 to-red-500 bg-[length:200%_auto] bg-clip-text text-transparent animate-text-gradient">
                 Happening Now
               </span>
             </h2>
-            <p className="text-muted text-lg max-w-2xl mx-auto">External opportunities currently open for sponsorship.</p>
-          </div>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto mt-4">Real-time external opportunities currently open for sponsorship.</p>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {liveLoading ? (
@@ -255,26 +280,39 @@ export default function LandingPage() {
                 <Loader2 className="w-8 h-8 animate-spin text-accent" />
               </div>
             ) : liveEvents.length === 0 ? (
-               <div className="col-span-full text-center text-muted-foreground py-12">
-                 FastAPI Backend is currently offine or no live events found. Run `uvicorn main:app --reload` in `/backend`.
+               <div className="col-span-full p-8 rounded-2xl border border-dashed border-border flex flex-col items-center justify-center text-center text-muted-foreground bg-card/30 backdrop-blur-md">
+                 <Zap className="w-8 h-8 opacity-20 mb-3" />
+                 <p className="font-medium">No external events fetching.</p>
+                 <p className="text-sm mt-1">Make sure the FastAPI backend is running.</p>
                </div>
-            ) : liveEvents.map((evt) => (
-              <div key={evt.id} className="relative rounded-2xl border border-border bg-card shadow-lg p-6 flex flex-col hover:border-accent/40 transition-colors">
-                <h3 className="font-semibold text-lg mb-2 flex items-start justify-between gap-2">
-                  <span className="leading-tight">{evt.title}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-red-500/20 text-red-500 rounded border border-red-500/30 whitespace-nowrap">LIVE</span>
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{evt.description}</p>
+            ) : liveEvents.map((evt, i) => (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, type: "spring" }}
+                key={evt.id} 
+                className="group relative rounded-2xl border border-border/60 bg-card/60 backdrop-blur-md shadow-lg p-6 flex flex-col hover:border-red-500/50 hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)] hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-orange-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 
-                <div className="mt-auto space-y-2 pt-4 border-t border-border/50 text-sm">
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-2" /> {evt.location}
+                <h3 className="font-bold text-lg mb-3 flex items-start justify-between gap-3">
+                  <span className="leading-tight text-foreground">{evt.title}</span>
+                  <span className="text-[10px] font-black px-2 py-0.5 bg-red-500/10 text-red-500 rounded border border-red-500/20 whitespace-nowrap animate-pulse shrink-0">
+                    LIVE
+                  </span>
+                </h3>
+                <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed">{evt.description}</p>
+                
+                <div className="mt-auto space-y-3 pt-4 border-t border-border/50 text-sm font-medium">
+                  <div className="flex items-center text-foreground/80">
+                    <MapPin className="h-4 w-4 mr-2.5 text-red-400" /> {evt.location}
                   </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Users className="h-4 w-4 mr-2" /> {evt.participants}+ Expected
+                  <div className="flex items-center text-foreground/80">
+                    <Users className="h-4 w-4 mr-2.5 text-red-400" /> {evt.participants}+ Expected
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

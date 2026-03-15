@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-import { auth, googleProvider } from "@/lib/firebase";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function SignupPage() {
   const [role, setRole] = useState<"organizer" | "sponsor">("organizer");
@@ -29,19 +30,37 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        role,
+        firstName,
+        lastName,
+        orgName,
+        email,
+        setupComplete: false,
+      }, { merge: true });
       router.push("/profile/setup");
     } catch (err: any) {
       setError(err.message || "Failed to create account");
-    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleSignup = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      router.push("/profile/setup");
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      if (userDoc.exists() && userDoc.data().setupComplete) {
+        router.push("/dashboard");
+      } else {
+        // Option to pre-fill role if we want, but default to organizer
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          role,
+          email: userCredential.user.email,
+          setupComplete: false,
+        }, { merge: true });
+        router.push("/profile/setup");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to sign up with Google");
     }

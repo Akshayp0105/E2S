@@ -5,40 +5,57 @@ import { Search, Send, Phone, Video, MoreVertical, MessageSquare, AlertTriangle 
 import { Avatar, AvatarFallback } from "@/components/ui/Avatar";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 
-// Dummy Chat list for UI purposes
-const CHATS = [
-  {
-    id: "demo-chat-1",
-    name: "Aether Dynamics",
-    lastMessage: "Are you flexible on the booth size?",
-    time: "10:42 AM",
-    unread: 2,
-    online: true,
-  },
-  {
-    id: "demo-chat-2",
-    name: "Stanford CS Dept",
-    lastMessage: "Looking forward to the hackathon!",
-    time: "Yesterday",
-    unread: 0,
-    online: false,
-  }
-];
-
 export default function MessagesPage() {
-  const [activeChat, setActiveChat] = useState(CHATS[0]);
+  const [chatsList, setChatsList] = useState<any[]>([]);
+  const [activeChat, setActiveChat] = useState<any | null>(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Fetch all other users to act as a contact list
   useEffect(() => {
-    if (!activeChat) return;
+    const fetchUsers = async () => {
+      if (!auth.currentUser) return;
+      try {
+        const snapshot = await getDocs(collection(db, "users"));
+        const users = snapshot.docs
+          .map((doc: any) => ({ id: doc.id, ...doc.data() }))
+          .filter((user: any) => user.id !== auth.currentUser?.uid)
+          .map((user: any) => ({
+            id: user.id,
+            name: user.orgName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User',
+            lastMessage: "Tap to view conversation",
+            time: "",
+            unread: 0,
+            online: true,
+          }));
+        
+        setChatsList(users);
+        if (users.length > 0 && !activeChat) {
+          setActiveChat(users[0]);
+        }
+      } catch (err) {
+        console.error("Error fetching users for chat:", err);
+      }
+    };
     
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (user) fetchUsers();
+    });
+    
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Fetch messages between current user and activeChat
+  useEffect(() => {
+    if (!activeChat || !auth.currentUser) return;
+    
+    const chatId = [auth.currentUser.uid, activeChat.id].sort().join('-');
     const q = query(
-      collection(db, "chats", activeChat.id, "messages"),
+      collection(db, "chats", chatId, "messages"),
       orderBy("createdAt", "asc")
     );
 
@@ -65,7 +82,8 @@ export default function MessagesPage() {
     try {
       const text = message;
       setMessage("");
-      await addDoc(collection(db, "chats", activeChat.id, "messages"), {
+      const chatId = [auth.currentUser.uid, activeChat.id].sort().join('-');
+      await addDoc(collection(db, "chats", chatId, "messages"), {
         text,
         senderId: auth.currentUser.uid,
         senderEmail: auth.currentUser.email,
@@ -97,15 +115,17 @@ export default function MessagesPage() {
           </div>
           
           <div className="flex-1 overflow-y-auto">
-            {CHATS.map(chat => (
+            {chatsList.length === 0 ? (
+               <div className="p-4 text-sm text-muted-foreground text-center mt-4">No contacts found</div>
+            ) : chatsList.map(chat => (
               <div 
                 key={chat.id} 
-                className={`p-4 border-b border-border/50 cursor-pointer transition-colors flex gap-3 ${activeChat.id === chat.id ? "bg-secondary/80 border-l-2 border-l-accent" : "hover:bg-secondary/30 border-l-2 border-l-transparent"}`}
+                className={`p-4 border-b border-border/50 cursor-pointer transition-colors flex gap-3 ${activeChat?.id === chat.id ? "bg-secondary/80 border-l-2 border-l-accent" : "hover:bg-secondary/30 border-l-2 border-l-transparent"}`}
                 onClick={() => setActiveChat(chat)}
               >
                 <div className="relative">
                   <Avatar>
-                    <AvatarFallback className={activeChat.id === chat.id ? "bg-accent/20 text-accent font-bold" : "bg-primary text-primary-foreground font-bold"}>
+                    <AvatarFallback className={activeChat?.id === chat.id ? "bg-accent/20 text-accent font-bold" : "bg-primary text-primary-foreground font-bold"}>
                       {chat.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
@@ -115,16 +135,11 @@ export default function MessagesPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-1">
-                    <h4 className="font-semibold text-sm truncate">{chat.name}</h4>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>
+                     <h4 className="font-semibold text-sm truncate">{chat.name}</h4>
+                     {chat.time && <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{chat.lastMessage}</p>
                 </div>
-                {chat.unread > 0 && (
-                  <div className="w-5 h-5 rounded-full bg-accent text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-2">
-                    {chat.unread}
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -231,7 +246,7 @@ export default function MessagesPage() {
               <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
                 <MessageSquare className="w-8 h-8 opacity-50" />
               </div>
-              <p>Select a conversation to start chatting.</p>
+              <p>Select a contact to start chatting.</p>
             </div>
           )}
         </div>
