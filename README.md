@@ -20,6 +20,10 @@ E2S solves this problem by creating a **centralized digital platform** where:
 The goal is to simplify the entire process of **finding, negotiating, and securing sponsorships**.
 
 ---
+## Live Demo  
+
+Frontend (Vercel): https://e2-s-hge6.vercel.app
+Backend (Render): https://e2s-3.onrender.coM
 
 # 🧠 Core Idea
 
@@ -193,7 +197,7 @@ Open in browser:
 ```
 http://localhost:3000
 ```
-📸 Screenshots
+## 📸 Screenshots
 
 
 
@@ -202,7 +206,7 @@ http://localhost:3000
 <img width="1153" height="751" alt="image" src="https://github.com/user-attachments/assets/4ee2c9d8-7b9c-4df3-a525-fba8d8b4a794" />
 <img width="1890" height="875" alt="image" src="https://github.com/user-attachments/assets/b8f13b36-7461-4ac6-8a0a-2d1ba804b519" />
 
-🎯 Advantages of E2S
+## 🎯 Advantages of E2S
 
 ✔ Simplifies sponsorship discovery
 ✔ Reduces cold-email outreach
@@ -210,19 +214,15 @@ http://localhost:3000
 ✔ Builds a transparent sponsorship ecosystem
 ✔ Creates networking between organizations and brands
 
-🔮 Future Improvements
+## 🔮 Future Improvements
 
-AI-based sponsor recommendation
+-AI-based sponsor recommendation
+-Secure payment integration
+-Smart contract generation
+-Analytics for sponsors
+-Event success tracking
 
-Secure payment integration
-
-Smart contract generation
-
-Analytics for sponsors
-
-Event success tracking
-
-👨‍💻 Author
+## 👨‍💻 Author
 
 Akshay P
 
