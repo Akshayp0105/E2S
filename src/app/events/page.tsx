@@ -37,7 +37,7 @@ export default function EventsPage() {
         // Fetch External Live Events
         let externalEvents: any[] = [];
         try {
-          const res = await fetch("http://localhost:8000/api/events/live");
+          const res = await fetch("https://e2s-3.onrender.com/api/events/live");
           const data = await res.json();
           if (data && data.status === "success") {
             externalEvents = data.data.map((evt: any) => ({

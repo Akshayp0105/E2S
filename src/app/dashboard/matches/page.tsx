@@ -68,14 +68,14 @@ export default function SponsorMatchesPage() {
         let externalMatches: MatchProfile[] = [];
         try {
            if (currentRole === "taker") {
-             const res = await fetch("http://localhost:8000/api/sponsors/live");
+             const res = await fetch("https://e2s-3.onrender.com/api/sponsors/live");
              const data = await res.json();
              if (data && data.status === "success") {
                externalMatches = data.data;
              }
            } else {
              // Givers should match with live external events
-             const res = await fetch("http://localhost:8000/api/events/live");
+             const res = await fetch("https://e2s-3.onrender.com/api/events/live");
              const data = await res.json();
              if (data && data.status === "success") {
                externalMatches = data.data.map((evt: any) => ({

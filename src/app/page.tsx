@@ -34,7 +34,7 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchLiveEvents = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/events/live");
+        const res = await fetch("https://e2s-3.onrender.com/api/events/live");
         if (res.ok) {
           const data = await res.json();
           if (data.status === "success" && data.data) {
