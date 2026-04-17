@@ -23,6 +23,7 @@ The goal is to simplify the entire process of **finding, negotiating, and securi
 ## Live Demo  
 
 Frontend (Vercel): https://e2-s-hge6.vercel.app
+...
 Backend (Render): https://e2s-3.onrender.coM
 
 # 🧠 Core Idea
