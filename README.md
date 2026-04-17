@@ -20,11 +20,11 @@ E2S solves this problem by creating a **centralized digital platform** where:
 The goal is to simplify the entire process of **finding, negotiating, and securing sponsorships**.
 
 ---
+ 
 ## Live Demo  
 
-Frontend (Vercel): https://e2-s-hge6.vercel.app
-...
-Backend (Render): https://e2s-3.onrender.coM
+Frontend (Vercel): https://e2-s-hge6.vercel.app  
+Backend (Render): https://e2s-3.onrender.com  
 
 # 🧠 Core Idea
 
