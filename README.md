@@ -6,6 +6,7 @@ The platform acts as a **marketplace for sponsorship discovery**, enabling organ
 
 ---
 
+
 # 🚀 Project Vision
 
 Finding sponsors for events is often difficult and inefficient.  
