@@ -16,6 +16,7 @@ E2S solves this problem by creating a **centralized digital platform** where:
 
 - Event organizers can list events needing sponsorship
 - Companies can discover events that match their interests
+
 - Both parties can communicate and collaborate efficiently
 
 The goal is to simplify the entire process of **finding, negotiating, and securing sponsorships**.
