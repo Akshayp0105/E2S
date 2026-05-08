@@ -4,6 +4,7 @@ E2S (Event to Sponsor) is a web platform designed to connect **event organizers 
 
 The platform acts as a **marketplace for sponsorship discovery**, enabling organizers to list events and allowing sponsors to explore opportunities that align with their brand, industry, and marketing goals.
 
+
 ---
 
 
