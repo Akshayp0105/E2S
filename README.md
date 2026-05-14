@@ -8,7 +8,7 @@ The platform acts as a **marketplace for sponsorship discovery**, enabling organ
 ---
 
 
-# 🚀 Project Vision
+## 🚀 Project Vision
 
 Finding sponsors for events is often difficult and inefficient.  
 Organizers typically send hundreds of emails or make cold calls to companies with little success.
